@@ -1,0 +1,1 @@
+After some years this is a refresh in the use of SuperCollider based on the SuperCollider Book
