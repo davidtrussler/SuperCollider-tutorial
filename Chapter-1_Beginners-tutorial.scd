@@ -1,15 +1,13 @@
-// Everyone has to start here
-"Hello World!"
+// 1.1 Hello World
 
-==
+// Everyone has to start here
+'Hello World!'
 
 // sets the default server to variable s and boots it
 Server.default = s = Server.internal.boot;
 
 // Quits the server booted above
 s.quit;
-
-==
 
 // Some examples from the Tutorial
 play({SinOsc.ar(LFNoise0.kr(12, mul: 600, add: 1000), 0.3)});
