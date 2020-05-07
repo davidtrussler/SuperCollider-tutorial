@@ -31,16 +31,19 @@ play({
 
 ==
 
-// message(argument, argument)
+// 1.2 Messages and  arguments
 
-// demonstrates generation of random values
+// generates random values
 rand(100.0);
-exprand(1.0, 100.0);
+exprand(1.0, 100.0); // exponential
 
+// duplicator
 dup('echo', 20);
 
-round([3.141, 5.674, 34.657], 0.001);
+// rounds to x decimal places
+round([3.141, 5.674, 34.657], 0.01);
 
+// sorts an array
 sort([34, 2, 467, 23, 2567]);
 
 ==
