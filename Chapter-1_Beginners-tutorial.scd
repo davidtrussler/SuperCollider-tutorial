@@ -56,54 +56,34 @@ sort([34, 2, 467, 23, 2567]);
 
 ==
 
-// Help!
-
-Env // command D
-
-==
-
-// UGen: Phase Modulation Sine Oscillator
-{PMOsc.ar(carfreq: 440, modfreq: MouseY.kr(1, 550), pmindex: MouseX.kr(1, 15))}.play;
-
-// UGen: Band Limited Impulse Oscillator
-{Blip.ar(freq: 2)}.play;
-
-// UGen: Impulse Oscillator
-{Impulse.ar(freq: 5)}.play;
-
-==
-
-// Tutorial examples
-
-// Figure 1.4
-Blip.ar(
-
-)
-
-==
-
-got up to p.27, receivers etc.
-
-==
+// 1.9 Synth Definitions
 
 {SinOsc.ar([440, 439])}.play;
+// creates a temp__number synth def
 
 SynthDef('sine1', {Out.ar(0, SinOsc.ar(220))}).play
 SynthDef('sine2', {Out.ar(0, SinOsc.ar(440))}).play
+// creates named synth defs and plays immediately
+
 SynthDef('sine3', {Out.ar(0, SinOsc.ar(660))}).add
 (SynthDef('sine4', {
 	arg freq = 440;
 	Out.ar(0, SinOsc.ar(freq))}
 ).add)
+// creates and stores named synth defs
 
 a = Synth('sine4', ['freq', 220]);
-b = Synth('sine4', ['freq', 220]);
+b = Synth('sine4', ['freq', 2200]);
+// plays named synth def with given parameter that was set as a variable
 
 a.set('freq', 990);
 b.set('freq', 1010);
+// sets value for parameter while playing
 
 a.free
 b.free
+
+==
 
 ~houston = Buffer.read(s, '../../../System/Library/Sounds/Basso.aiff');
 ~chooston = Buffer.read(s, '../../../System/Library/Sounds/Blow.aiff');
