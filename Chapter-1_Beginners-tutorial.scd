@@ -48,8 +48,9 @@ sort([34, 2, 467, 23, 2567]);
 
 ==
 
-// Functions
+// 1.5 Enclosures
 
+// Functions
 {exprand(1.0, 100.0)};
 {SinOsc.ar([200, 250])}.play;
 
