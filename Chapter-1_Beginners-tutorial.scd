@@ -85,13 +85,20 @@ b.free
 
 ==
 
+// 1.10 Buses, Buffers and Nodes
+
+// useful to get current location
+~cuurentLoc = thisProcess.nowExecutingPath.dirname;
+
+// load sounds into Buffers
 ~houston = Buffer.read(s, '../../../System/Library/Sounds/Basso.aiff');
 ~chooston = Buffer.read(s, '../../../System/Library/Sounds/Blow.aiff');
 
-{PlayBuf.ar(2, ~houston, loop: 1, rate: 0.25)}.play;
-{PlayBuf.ar(2, ~chooston, loop: 1, rate: 0.5)}.play;
+{PlayBuf.ar(2, ~houston, loop: 1, rate: 1)}.play;
+{PlayBuf.ar(2, ~chooston, loop: 1, rate: 1)}.play;
 
-( // phasing
+// phasing example
+(
 {
 	var rate, trigger, frames;
 
@@ -103,29 +110,50 @@ b.free
 }.play
 )
 
+// speed and direction change example
+(
+{
+	var speed, direction;
+	speed = LFNoise0.kr(12) * 0.2 + 1;
+	direction = LFClipNoise.kr(1/3);
+	PlayBuf.ar(2, ~chooston, (speed * direction), loop: 1);
+}.play
+)
+
+// Using buses to connnect controls
 (
 ~kbus1 = Bus.control;
 ~kbus2 = Bus.control;
 )
 
-({
-	var speed, direction;
-	speed = In.kr(~kbus1, 1) * 0.2 + 1;
-	direction = In.kr(~kbus2);
-	PlayBuf.ar(1, ~chooston, (speed * direction), loop: 1);
-}.play)
-
+// our speed and direction change example from above
+// the control buses have replaced the hard-coded values
 (
-{Out.kr(~kbus1, LFNoise0.kr(12))}.play;
-{Out.kr(~kbus2, LFClipNoise.kr(1/4))}.play;
+{
+	var speed, direction;
+	speed = LFNoise0.kr(~kbus1, 1) * 0.2 + 1;
+	direction = LFClipNoise.kr(~kbus2);
+	PlayBuf.ar(1, ~chooston, (speed * direction), loop: 1);
+}.play
 )
 
-({
+(
+// start the controls
+{Out.kr(~kbus1, LFNoise0.kr(12))}.play;
+{Out.kr(~kbus2, LFClipNoise.kr(1/4))}.play
+)
+
+// send the second buffer to the right channel
+(
+{
 	var speed, direction;
 	speed = In.kr(~kbus1, 1) * 0.2 + 1;
 	direction = In.kr(~kbus2);
-	Out.ar(1, PlayBuf.ar(1, ~houston, (speed * direction), loop: 1));
-}.play)
+	Out.kr(~kbus2, PlayBuf.ar(2, ~houston, (speed * direction), loop: 1));
+}.play
+)
+
+// this isn't really doing what is expected but I'm not really sure why not
 
 ==
 
@@ -135,6 +163,13 @@ b.free
 {Out.kr(~kbus3, SinOsc.kr(3).scope('out3') * 100)}.play;
 {Out.kr(~kbus4, LFPulse.kr(1/3).scope('out4') * 200)}.play;
 {Out.ar(0, SinOsc.ar(In.kr(~kbus3) + In.kr(~kbus4) + 440).scope('left'))}.play;
+{Out.ar(1, SinOsc.ar(In.kr(~kbus3) + In.kr(~kbus4) + 880).scope('right'))}.play;
+
+// Hmmm, likewise.
+// I'm going to leave this section at this point for now and revisit it later
+// It does seem pretty important
+
+==
 
 // arrays and looops and stuff
 
