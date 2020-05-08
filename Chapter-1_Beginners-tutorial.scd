@@ -171,14 +171,20 @@ b.free
 
 ==
 
-// arrays and looops and stuff
+// 1.11 Arrays, Iteration and Logical Expressions
 
+// Creates an array
 a = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+// Retrieves an item from the array by index
 a.at(8);
+
+// Introduces the do method
+// see also: loop, while, for, forBy
 do(20, {a.at(7.rand).postln});
 
-loop while for forBy
-
+// Introduces the Task class
+// see Routines & Tasks - https://www.evernote.com/shard/s336/nl/52980809/a1a513c6-6781-4bae-bcd8-a7155cd09ee0/
 (
 Task({
 	do(10, {
@@ -188,6 +194,8 @@ Task({
 }).play;
 )
 
+// Introduces a number of useful array methods:
+// wrapAt
 (
 Task({
 	a = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
@@ -202,7 +210,7 @@ Task({
 }).play;
 )
 
-// syntax for loop
+// Syntax for do
 (
 do(10, {
 	arg i;
@@ -210,18 +218,16 @@ do(10, {
 });
 )
 
-// syntax for if statement
+// Syntax for if
 (
 if (
-	2 == 3,
+	2 === 3,
 	{'thats correct!'},
 	{'thats bollocks!'}
 );
 )
 
-// Boolean operators
-3 >= 3;
-
+// Syntax for Task
 (
 Task({
 	do(10, {
@@ -231,3 +237,4 @@ Task({
 	});
 }).postln
 )
+
