@@ -6,9 +6,6 @@
 // sets the default server to variable s and boots it
 Server.default = s = Server.internal.boot;
 
-// Quits the server booted above
-s.quit;
-
 // Some examples from the Tutorial
 play({SinOsc.ar(LFNoise0.kr(12, mul: 600, add: 1000), 0.3)});
 
@@ -74,7 +71,7 @@ SynthDef('sine3', {Out.ar(0, SinOsc.ar(660))}).add
 
 a = Synth('sine4', ['freq', 220]);
 b = Synth('sine4', ['freq', 2200]);
-// plays named synth def with given parameter that was set as a variable
+// plays named synth def with given parameter that was set as an argument
 
 a.set('freq', 990);
 b.set('freq', 1010);
@@ -238,3 +235,106 @@ Task({
 }).postln
 )
 
+==
+
+// 1.12 How to "Do" an Array
+
+// Simple "do" of an array that shows the two arguments passed by the do method
+(
+[0, 2, 4, 5, 7, 9, 11].do({
+	arg each, count;
+	["count", count, "each", each].postln
+});
+)
+
+// Takes a 12 tone series of musical notes and prints a matrix of each variation
+(
+var row, inversion, pitchClass;
+
+// array of numbers, 1 - 11, scrambled, 0 added at first position
+row = Array.series(11, 1).scramble.insert(0, 0);
+
+// Converts row to a series of numbers: 12, then 11 - 1 in scrambled order
+inversion = 12 - row;
+
+// array of musical notes
+pitchClass = ["C ", "C# ", "D ", "Eb ", "E ", "F ", "F# ", "G ", "Ab ", "A ", "Bb ", "B "];
+
+inversion.do({
+	arg eachInv;
+
+	var trans;
+
+	trans = (row + eachInv);
+
+	trans.do({
+		arg scaleDegree;
+
+		pitchClass.wrapAt(scaleDegree).post
+	});
+
+	"".postln;
+});
+"".postln;
+)
+
+// Use array for additive synthesis
+
+// a. Generate random amplitude with LFNoise1
+{max(0, LFNoise1.ar(5000))}.plot;
+{max(0, LFNoise1.kr(12))}.plot;
+(
+{
+	var ampCont = {max(0, LFNoise1.kr(12))};
+	SinOsc.ar(440, mul: ampCont)
+}. scope
+)
+
+// b. Use Mix to mix together an array of UGens
+(
+{
+	Mix.ar(
+		Array.fill(20, {
+			arg cnt;
+			var harm = cnt + 1 * 110;
+			SinOsc.ar(
+				harm,
+				mul: max(
+					[0, 0],
+					SinOsc.kr(cnt + 1 / 4)
+				)
+			) * 1 / (cnt + 1)
+		});
+	) * 0.7
+}.scope
+)
+
+// c. Creates a collection of bells with Klank
+(
+{
+	var scale, specs, freqs, amps, rings, numRes = 5, bells = 20, pan;
+
+	scale = [60, 62, 64, 67, 69].midicps;
+
+	Mix.fill(bells, {
+		freqs = Array.fill(numRes, {rrand(1, 15) * (scale.choose)});
+		amps = Array.fill(numRes, {rrand(0.3, 0.9)});
+		rings = Array.fill(numRes, {rrand(1.0, 4.0)});
+		specs = [freqs, amps, rings].round(0.01);
+		specs.postln;
+		pan = (LFNoise1.kr(rrand(3, 6)) * 2).softclip;
+		Pan2.ar(
+			Klank.ar(
+				`specs,
+				Dust.ar(1 / 6, 0.03)
+			),
+			pan
+		);
+	})
+}.play
+)
+
+==
+
+// Quits the server booted above
+s.quit;
