@@ -486,5 +486,123 @@ Synth("SimpleBlip")
 
 ==
 
+// 1.14 Scale and Offset
+
+// Uses scope and poll to visually demonstrate mul & add
+(
+{
+	var trigger, wave, label, scale, offset;
+
+	trigger = Impulse.kr(10);
+	wave = SinOsc.kr(1 / 10);
+	scale = 100;
+	offset = 600;
+
+	wave = wave * scale + offset;
+	label = "scale = " ++ scale.asString ++ ", offset = " ++ offset.asString;
+
+	wave.round(0.01).poll(label: label);
+}.scope(1)
+)
+
+// Uses SinOsc to control frequency via scale & offset
+(
+{
+	var trigger, scale, offset, control;
+
+	trigger = Impulse.kr(10);
+	scale = 300;
+	offset = 600;
+	control = SinOsc.ar(1 / 4).scope("control");
+
+	control = control * scale + offset;
+
+	SinOsc.ar(freq: abs(control).poll).scope("audio");
+}.play
+)
+
+// PMOsc with offset & scale
+(
+a = SynthDef("PMOsc_ex", {
+	arg left = 10, right = 10, indexLow = 4, indexHigh = 12;
+
+	var pitch, timbre, trigger, env, index, out;
+
+	trigger = Impulse.kr([left, right]);
+	pitch = TRand.kr(36, 72, trigger).round(1);
+	timbre = LFNoise0.kr(1 / 20, 0.2, 2);
+	env = Linen.kr(trigger, releaseTime: 1 / [left, right]);
+	index = env * indexHigh + indexLow;
+
+	pitch = pitch.midicps;
+	out = PMOsc.ar(pitch, pitch * timbre, index, mul: env);
+
+	Out.ar(0, out);
+}).play
+)
+
+a.set("left", 0.5);
+a.set("right", 0.5);
+a.set("indexLow", 1);
+a.set("indexHigh", 4);
+
+// PMOsc with sample & hold
+(
+a = SynthDef("Latch_demo", {
+	arg rate = 9;
+
+	var freq, latchrate, index, ratio, env, out;
+
+	latchrate = rate * LFNoise0.kr(
+		freq: 1 / 10,
+		mul: 0.03,
+		add: 1.6
+	);
+	index = Latch.kr(
+		in: LFSaw.kr(freq: latchrate, mul: 5, add: 6),
+		trig: Impulse.kr(rate)
+	);
+	freq = Latch.kr(
+		in: LFSaw.kr(
+			freq: latchrate,
+			mul: max(0, LFNoise1.kr(
+				1 / 5, 24, 10
+			)),
+			add: LFNoise0.kr(
+				1 / 7, 12, 60
+			)
+		),
+		trig: Impulse.kr(rate)
+	).round(1).midicps;
+	ratio = LFNoise1.kr(
+		freq: 1 / 10,
+		mul: 2.0,
+		add: 5.0
+	);
+	env = EnvGen.kr(
+		envelope: Env.perc(
+			attackTime: 0,
+			releaseTime: LFNoise0.kr(
+				rate, 1, 1.5
+		) / rate),
+		gate: Impulse.kr(rate),
+		levelScale:	LFNoise1.kr([5, 5], 2, 1).max(0).min(0.8)
+	);
+	out = PMOsc.ar(
+		carfreq: [freq, freq * 1.5],
+		modfreq: freq * ratio,
+		pmindex: index,
+		mul: env
+	);
+
+	Out.ar(0, out);
+}).play
+)
+
+a.set("rate", 1);
+a.free;
+
+==
+
 // Quits the server booted above
 s.quit;
